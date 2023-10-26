@@ -83,6 +83,7 @@ byte txSP2RollingCode[SECPLUS2_CODE_LEN];
 byte rxSP2RollingCode[SECPLUS2_CODE_LEN];
 
 unsigned int obstructionLowCount = 0;  // count obstruction low pulses
+bool obstructionSensorDetected = false;
 unsigned long lastObstructionHigh = 0;  // count time between high pulses from the obst ISR
 unsigned long lastRX = 0;
 

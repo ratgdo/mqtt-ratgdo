@@ -393,12 +393,14 @@ void IRAM_ATTR isrObstruction(){
 	if(digitalRead(INPUT_OBST)){
 		lastObstructionHigh = millis();
 	}else{
+		obstructionSensorDetected = true;
 		obstructionLowCount++;
 	}
 	
 }
 
 void obstructionLoop(){
+	if(!obstructionSensorDetected) return;
 	long currentMillis = millis();
 	static unsigned long lastMillis = 0;
 
