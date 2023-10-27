@@ -41,7 +41,7 @@ void readStaticCode(byte rxSP1StaticCode[SECPLUS1_CODE_LEN], uint8_t &door, uint
 			// door stops then reverses, so map all to "opening" state
 			// door opening
 			door = 4;
-		}else if(val == 0x04){
+		}else if(val == 0x04 || val == 0x44){
 			// door closing
 			door = 5;
 		}else{
