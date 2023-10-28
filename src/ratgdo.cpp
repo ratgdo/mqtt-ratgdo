@@ -494,6 +494,12 @@ void sendMotionStatus(){
 	}
 
 	motionState = 0; // reset motion state
+
+	// query to sync light state
+	delay(100);
+	getRollingCode("reboot2");
+	transmit(txSP2RollingCode,SECPLUS2_CODE_LEN);
+
 }
 
 void sendObstructionStatus(){
