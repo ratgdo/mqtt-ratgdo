@@ -187,6 +187,7 @@ void wallPanelEmulatorLoop(){
 }
 
 void gdoStateLoop(){
+	blink(false);
 	if(!swSerial.available()) return;
 	uint8_t serData = swSerial.read();
 
@@ -531,7 +532,7 @@ void manageHardwareButton(){
 
 /********************************** MQTT CALLBACK *****************************************/
 void callback(char *topic, byte *payload, unsigned int length){
-
+	blink(true);
 	// Transform all messages in a JSON format
 	StaticJsonDocument<BUFFER_SIZE> json = bootstrapManager.parseQueueMsg(topic, payload, length);
 
@@ -629,6 +630,19 @@ void pullLow(){
 	digitalWrite(OUTPUT_GDO, HIGH);
 	delay(500);
 	digitalWrite(OUTPUT_GDO, LOW);
+}
+
+void blink(bool trigger){
+	if(LED_BUILTIN == OUTPUT_GDO) return;
+	static unsigned int onMillis = 0;
+	unsigned int currentMillis = millis();
+
+	if(trigger){
+		digitalWrite(LED_BUILTIN,LOW);
+		onMillis = currentMillis;
+	}else if(currentMillis - onMillis > 500){
+		digitalWrite(LED_BUILTIN,HIGH);
+	}
 }
 
 void sync(){

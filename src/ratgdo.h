@@ -97,6 +97,7 @@ void manageDisconnections();
 void manageQueueSubscription();
 void manageHardwareButton();
 
+void blink(bool trigger);
 void transmit(byte* payload, unsigned int length);
 void sync();
 
