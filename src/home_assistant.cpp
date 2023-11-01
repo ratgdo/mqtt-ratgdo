@@ -15,7 +15,7 @@ void ha_autodiscovery_door(BootstrapManager *bootstrapManager){
 	JsonObject payload = bootstrapManager->getJsonObject();
 
 	payload["~"] = mqttTopicPrefix + deviceName;
-    payload["name"] = deviceName;
+    payload["name"] = "Door";
     payload["unique_id"] = uniqueID;
     payload["availability_topic"] = "~/status/availability";
     payload["device_class"] = "garage";
@@ -42,7 +42,7 @@ void ha_autodiscovery_light(BootstrapManager *bootstrapManager){
 	JsonObject payload = bootstrapManager->getJsonObject();
 
 	payload["~"] = mqttTopicPrefix + deviceName;
-	payload["name"] = deviceName + " Light";
+	payload["name"] = "Light";
 	payload["unique_id"] = uniqueID + "_light";
 	payload["availability_topic"] = "~/status/availability";
     payload["command_topic"] = "~/command/light";
@@ -66,7 +66,7 @@ void ha_autodiscovery_obs(BootstrapManager *bootstrapManager){
 	JsonObject payload = bootstrapManager->getJsonObject();
 
 	payload["~"] = mqttTopicPrefix + deviceName;
-    payload["name"] = deviceName + " Obstruction";
+    payload["name"] = "Obstruction";
     payload["unique_id"] = uniqueID + "_obs";
     payload["availability_topic"] = "~/status/availability";
     payload["device_class"] = "motion";
