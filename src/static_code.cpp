@@ -29,19 +29,26 @@ void readStaticCode(byte rxSP1StaticCode[SECPLUS1_CODE_LEN], uint8_t &door, uint
 		Serial.print(" ");
 		Serial.println(val,BIN);
 
-		if(val == 0x52){
+		val = (val & 0x7);
+		// 000 0x0 stopped
+		// 001 0x1 opening
+		// 010 0x2 open
+		// 100 0x4 closing
+		// 101 0x5 closed
+
+		if(val == 0x2){
 			// door open
 			door = 1;
-		}else if(val == 0x55){
+		}else if(val == 0x5){
 			// door closed
 			door = 2;
-		}else if(val == 0x01 || val == 0x51 || val == 0x52 || val == 0x80 || val == 0x81 || val == 0x41){
-			// 80/81 when obstruction beam is broken while closing
-			// 51 when physical obstruction is detected
-			// door stops then reverses, so map all to "opening" state
+		}else if(val == 0x0){
+			// door stopped
+			door = 3;
+		}else if(val == 0x1){
 			// door opening
 			door = 4;
-		}else if(val == 0x04 || val == 0x44){
+		}else if(val == 0x4){
 			// door closing
 			door = 5;
 		}else{
