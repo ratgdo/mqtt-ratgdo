@@ -16,12 +16,6 @@ void readStaticCode(byte rxSP1StaticCode[SECPLUS1_CODE_LEN], uint8_t &door, uint
 		return;
 	}
 
-	// When powering on the wall panel will broadcast 31 as it syncs with the opener
-	if(key == 0x31 && val == 0x31){
-		door = 6;
-		return;
-	}
-
 	// door state
 	if(key == 0x38){
 		Serial.print(" | door state: ");
