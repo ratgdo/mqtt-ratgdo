@@ -29,6 +29,7 @@ void readStaticCode(byte rxSP1StaticCode[SECPLUS1_CODE_LEN], uint8_t &door, uint
 		// 010 0x2 open
 		// 100 0x4 closing
 		// 101 0x5 closed
+		// 110 0x6 stopped
 
 		if(val == 0x2){
 			// door open
@@ -36,7 +37,7 @@ void readStaticCode(byte rxSP1StaticCode[SECPLUS1_CODE_LEN], uint8_t &door, uint
 		}else if(val == 0x5){
 			// door closed
 			door = 2;
-		}else if(val == 0x0){
+		}else if(val == 0x0 || val == 0x6){
 			// door stopped
 			door = 3;
 		}else if(val == 0x1){
