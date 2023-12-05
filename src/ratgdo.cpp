@@ -540,22 +540,18 @@ void callback(char *topic, byte *payload, unsigned int length){
 	if(command == "query"){
 		Serial.println("MQTT: query");
 
-		if(controlProtocol != "secplus2"){
-			Serial.print("Query not supported with ");
-			Serial.println(controlProtocol);
-			return;
-		}
-
-		getRollingCode("reboot2");
-		transmit(txSP2RollingCode,SECPLUS2_CODE_LEN);
-		delay(100);
-
 		// Set all to unknown
 		doorState = 0;
 		lightState = 2;
 		lockState = 2;
 		motionState = 0;
 		obstructionState = 2;
+
+		if(controlProtocol == "secplus2"){
+			getRollingCode("reboot2");
+			transmit(txSP2RollingCode,SECPLUS2_CODE_LEN);
+			delay(100);
+		}
 	}
 
 	if(command == "sync"){
@@ -711,7 +707,7 @@ void toggleDoor(){
 	if(controlProtocol == "drycontact"){
 		pullLow();
 	}else if(controlProtocol == "secplus1"){
-		uint8_t delayLen = (lastRX + 275) - millis();
+		uint16_t delayLen = (lastRX + 275) - millis();
 		delay(delayLen);
 
 		getStaticCode("door1");
