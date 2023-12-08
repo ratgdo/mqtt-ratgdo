@@ -104,6 +104,7 @@ void loop(){
 
 		if(!setupComplete && bootstrapManager.mqttConnected()){
 			setupComplete = true;
+			setupCompleteMillis = millis();
 
 			// Send Home Assistant autodiscovery mqtt messages
 			ha_autodiscovery_setup(&bootstrapManager);
@@ -532,6 +533,16 @@ void manageHardwareButton(){
 
 /********************************** MQTT CALLBACK *****************************************/
 void callback(char *topic, byte *payload, unsigned int length){
+	// ignore retained messages so door doesn't move during reboot
+	if(!ignoredRetained){
+		if(millis() - setupCompleteMillis < 10000){
+			Serial.println("WARNING: detected possible retained mqtt command message, ignoring.");
+			return;
+		}else{
+			ignoredRetained = true;
+		}
+	}
+
 	blink(true);
 	// Transform all messages in a JSON format
 	StaticJsonDocument<BUFFER_SIZE> json = bootstrapManager.parseQueueMsg(topic, payload, length);

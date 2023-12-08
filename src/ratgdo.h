@@ -73,6 +73,8 @@ String obstructionStates[3] = {"obstructed","clear","unknown"};
 
 /********************************** GLOBAL VARS *****************************************/
 bool setupComplete = false;
+bool ignoredRetained = false;
+unsigned int setupCompleteMillis;
 unsigned int rollingCodeCounter;
 unsigned int idCode;
 byte txSP1StaticCode[1];
