@@ -120,7 +120,7 @@ void loop(){
 
 				readCounterFromFlash("idCode", idCode);
 				if(idCode == 0){
-					idCode = random(0x1,0xFFFF);
+					idCode = (random(0x1, 0xFFFF) % 0x7FF) << 12 | 0x539;
 					writeCounterToFlash("idCode", idCode);
 				}
 				readCounterFromFlash("rolling", rollingCodeCounter);
