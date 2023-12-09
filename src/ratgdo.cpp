@@ -120,9 +120,10 @@ void loop(){
 				LittleFS.begin();
 
 				readCounterFromFlash("idCode", idCode);
-				if(idCode == 0){
+				if(idCode & 0xFFF != 0x539){
 					idCode = (random(0x1, 0xFFFF) % 0x7FF) << 12 | 0x539;
 					writeCounterToFlash("idCode", idCode);
+					Serial.println("Initializing new client ID");
 				}
 				readCounterFromFlash("rolling", rollingCodeCounter);
 
@@ -274,7 +275,7 @@ void IRAM_ATTR isrDebounce(const char *type){
 
 	if(strcmp(type, "openDoor") == 0){
 		if(controlProtocol == "drycontact"){
-			if(currentMillis - lastOpenDoorTime > 50){
+			if(currentMillis - lastOpenDoorTime > 100){
 				dryContactDoorOpen = !digitalRead(TRIGGER_OPEN);
 
 				if(dryContactDoorOpen != lastDryContactDoorOpen){
@@ -287,7 +288,7 @@ void IRAM_ATTR isrDebounce(const char *type){
 			if(digitalRead(TRIGGER_OPEN) == LOW){
 				// save the time of the falling edge
 				lastOpenDoorTime = currentMillis;
-			}else if(currentMillis - lastOpenDoorTime > 500 && currentMillis - lastOpenDoorTime < 10000){
+			}else if(currentMillis - lastOpenDoorTime > 100 && currentMillis - lastOpenDoorTime < 10000){
 				// now see if the rising edge was between 500ms and 10 seconds after the falling edge
 				dryContactDoorOpen = true;
 			}
@@ -309,7 +310,7 @@ void IRAM_ATTR isrDebounce(const char *type){
 			if(digitalRead(TRIGGER_CLOSE) == LOW){
 				// save the time of the falling edge
 				lastCloseDoorTime = currentMillis;
-			}else if(currentMillis - lastCloseDoorTime > 500 && currentMillis - lastCloseDoorTime < 10000){
+			}else if(currentMillis - lastCloseDoorTime > 100 && currentMillis - lastCloseDoorTime < 10000){
 				// now see if the rising edge was between 500ms and 10 seconds after the falling edge
 				dryContactDoorClose = true;
 			}
