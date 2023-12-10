@@ -297,7 +297,7 @@ void IRAM_ATTR isrDebounce(const char *type){
 
 	if(strcmp(type, "closeDoor") == 0){
 		if(controlProtocol == "drycontact"){
-			if(currentMillis - lastCloseDoorTime > 50){
+			if(currentMillis - lastCloseDoorTime > 100){
 				dryContactDoorClose = !digitalRead(TRIGGER_CLOSE);
 
 				if(dryContactDoorClose != lastDryContactDoorClose){
@@ -321,7 +321,7 @@ void IRAM_ATTR isrDebounce(const char *type){
 		if(digitalRead(TRIGGER_LIGHT) == LOW){
 			// save the time of the falling edge
 			lastToggleLightTime = currentMillis;
-		}else if(currentMillis - lastToggleLightTime > 500 && currentMillis - lastToggleLightTime < 10000){
+		}else if(currentMillis - lastToggleLightTime > 100 && currentMillis - lastToggleLightTime < 10000){
 			// now see if the rising edge was between 500ms and 10 seconds after the falling edge
 			dryContactToggleLight = true;
 		}
