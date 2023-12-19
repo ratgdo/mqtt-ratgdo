@@ -120,10 +120,13 @@ void loop(){
 				LittleFS.begin();
 
 				readCounterFromFlash("idCode", idCode);
-				if(idCode & 0xFFF != 0x539){
+				Serial.print("exisiting client ID: ");
+				Serial.println(idCode,HEX);
+				if((idCode & 0xFFF) != 0x539){
+					Serial.println("Initializing new client ID: ");
 					idCode = (random(0x1, 0xFFFF) % 0x7FF) << 12 | 0x539;
 					writeCounterToFlash("idCode", idCode);
-					Serial.println("Initializing new client ID");
+					Serial.println(idCode, HEX);
 				}
 				readCounterFromFlash("rolling", rollingCodeCounter);
 
