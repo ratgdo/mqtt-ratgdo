@@ -89,7 +89,7 @@ void readRollingCode(byte rxSP2RollingCode[SECPLUS2_CODE_LEN], uint8_t &door, ui
 
 void getRollingCode(const char *command){
 	Serial.print("rolling code for ");
-	Serial.print(idCode);
+	Serial.print(idCode, HEX);
 	Serial.print(" ");
 	Serial.print(rollingCodeCounter);
 	Serial.print("|");
