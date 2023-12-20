@@ -23,6 +23,7 @@ ratgdo also can control door openers that use a dry contact interface. Status fe
 * Add mqtt toggle commands for control commands
 * Implement auto tune for obstruction sensors
 * Require two of the same status message for security + 1.0 to eliminate false reports from GDO
+* Flip light status on when motion detected packet is sent
 
 # Special thanks
 
