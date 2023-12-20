@@ -17,6 +17,12 @@ ratgdo also can control door openers that use a dry contact interface. Status fe
 # [Visit the github.io page for instructions](https://paulwieland.github.io/ratgdo/).
 [ratgdo on GitHub.io](https://paulwieland.github.io/ratgdo/)
 
+# To Do
+* Eliminate dependence on arduinobootstrapper
+* Implement web serial (requires different web server library)
+* Add mqtt toggle commands for control commands
+* Implement auto tune for obstruction sensors
+
 # Special thanks
 
 Special thanks to kosibar, Brad and TechJunkie01 - without whom this project would not have been possible.
