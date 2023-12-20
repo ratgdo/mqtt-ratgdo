@@ -22,6 +22,7 @@ ratgdo also can control door openers that use a dry contact interface. Status fe
 * Implement web serial (requires different web server library)
 * Add mqtt toggle commands for control commands
 * Implement auto tune for obstruction sensors
+* Require two of the same status message for security + 1.0 to eliminate false reports from GDO
 
 # Special thanks
 
