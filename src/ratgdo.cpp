@@ -766,7 +766,15 @@ void toggleLight(){
 	if(controlProtocol == "drycontact"){
 		Serial.println("Light control not supported with dry contact control.");
 	}else if(controlProtocol == "secplus1"){
+		uint16_t delayLen = (lastRX + 275) - millis();
+		delay(delayLen);
+
 		getStaticCode("light");
+		transmit(txSP1StaticCode,1);
+		delay(80);
+		getStaticCode("door2");
+		transmit(txSP1StaticCode,1);
+		delay(25);
 		transmit(txSP1StaticCode,1);
 	}else{
 		getRollingCode("light");
@@ -794,7 +802,13 @@ void unlock(){
 
 void toggleLock(){
 	if(controlProtocol == "secplus1"){
-		Serial.println("Lockout not supported with security+ 1.0");
+		uint16_t delayLen = (lastRX + 275) - millis();
+		delay(delayLen);
+
+		getStaticCode("lock");
+		transmit(txSP1StaticCode,1);
+		delay(32);
+		transmit(txSP1StaticCode,1);		
 	}else{
 		getRollingCode("lock");
 		transmit(txSP2RollingCode,SECPLUS2_CODE_LEN);

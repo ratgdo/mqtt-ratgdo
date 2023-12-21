@@ -12,6 +12,10 @@ void readStaticCode(byte rxSP1StaticCode[SECPLUS1_CODE_LEN], uint8_t &door, uint
 	printStaticCode(rxSP1StaticCode);
 	Serial.print(" ");
 
+	if(key == 0x31 && val == 0x31){
+		door = 6; // stop from entering emulation after power outage when 889lm is booting up
+	}
+
 	if(key == 0xFF || val == 0xFF){
 		return;
 	}
@@ -80,6 +84,8 @@ void getStaticCode(const char *command){
 		txSP1StaticCode[0] = 0x31;
 	}else if(strcmp(command,"light") == 0){
 		txSP1StaticCode[0] = 0x32;
+	}else if(strcmp(command,"lock") == 0){
+		txSP1StaticCode[0] = 0x35;
 	}
 
 	return;
