@@ -258,7 +258,7 @@ void gdoStateLoop(){
 				msgStart = 0;
 				byteCount = 0;
 
-				readStaticCode(rxSP1StaticCode, doorState, lightState);
+				readStaticCode(rxSP1StaticCode, doorState, lightState, lockState);
 			}
 		}
 	}
@@ -575,15 +575,18 @@ void callback(char *topic, byte *payload, unsigned int length){
 	}
 
 	if(strcmp(topic,doorCommandTopic.c_str()) == 0){
-		if (command == "open"){
+		if(command == "open"){
 			Serial.println("MQTT: open the door");
 			openDoor();
-		}else if (command == "close"){
+		}else if(command == "close"){
 			Serial.println("MQTT: close the door");
 			closeDoor();
-		}else if (command == "stop"){
+		}else if(command == "stop"){
 			Serial.println("MQTT: stop the door");
 			stopDoor();
+		}else if(command == "toggle"){
+			Serial.println("MQTT: toggle the door");
+			toggleDoor();
 		}else{
 			Serial.print("Unknown command: ");
 			Serial.println(command);
@@ -594,9 +597,12 @@ void callback(char *topic, byte *payload, unsigned int length){
 		if (command == "on"){
 			Serial.println("MQTT: turn the light on");
 			lightOn();
-		}else if(command = "off"){
+		}else if(command == "off"){
 			Serial.println("MQTT: turn the light off");
 			lightOff();
+		}else if(command == "toggle"){
+			Serial.println("MQTT: toggle the light");
+			toggleLight();
 		}else{
 			Serial.print("Unknown command: ");
 			Serial.println(command);
@@ -610,6 +616,9 @@ void callback(char *topic, byte *payload, unsigned int length){
 		}else if(command == "unlock"){
 			Serial.println("MQTT: unlock");
 			unlock();
+		}else if(command == "toggle"){
+			Serial.println("MQTT: toggle the lock");
+			toggleLock();
 		}else{
 			Serial.print("Unknown command: ");
 			Serial.println(command);
@@ -802,7 +811,7 @@ void unlock(){
 
 void toggleLock(){
 	if(controlProtocol == "secplus1"){
-		uint16_t delayLen = (lastRX + 275) - millis();
+		uint16_t delayLen = (lastRX + 125) - millis();
 		delay(delayLen);
 
 		getStaticCode("lock");
