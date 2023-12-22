@@ -2,6 +2,8 @@
 #include "static_code.h"
 
 void readStaticCode(byte rxSP1StaticCode[SECPLUS1_CODE_LEN], uint8_t &door, uint8_t &light, uint8_t &lock){
+	static uint8_t prevDoor;
+	
 	uint8_t obs = 0; // experiement to figure out what key 0x39 is for
 	uint8_t key = 0;
 	uint8_t val = 0;
@@ -34,6 +36,13 @@ void readStaticCode(byte rxSP1StaticCode[SECPLUS1_CODE_LEN], uint8_t &door, uint
 		// 100 0x4 closing
 		// 101 0x5 closed
 		// 110 0x6 stopped
+
+		// sec+1 doors sometimes report wrong door status
+		// require two sequential matching door states 
+		if(prevDoor != val){
+			prevDoor = val;
+			return;
+		}
 
 		if(val == 0x2){
 			// door open
