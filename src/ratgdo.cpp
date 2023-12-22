@@ -641,9 +641,25 @@ void transmit(byte* payload, unsigned int length){
 		digitalWrite(OUTPUT_GDO, LOW); // bring the line low
 
 		delayMicroseconds(1260); // "LOW" pulse duration before the message start
+
+		swSerial.write(payload,length);
+	}else if(controlProtocol == "secplus1"){
+		if(length == 1){
+			swSerial.write(payload,1);
+			return;
+		}
+
+		byte tempPayload[1];
+
+		txDelayLen = (lastRX + 275) - millis();
+		delay(txDelayLen);
+
+		for (uint8_t i = 0; i <= length; i++){
+			tempPayload[0] = payload[i];
+			swSerial.write(tempPayload,1);
+			delay(25);
+		}
 	}
-	
-	swSerial.write(payload,length);
 }
 
 void pullLow(){
@@ -731,16 +747,8 @@ void toggleDoor(){
 	if(controlProtocol == "drycontact"){
 		pullLow();
 	}else if(controlProtocol == "secplus1"){
-		uint16_t delayLen = (lastRX + 275) - millis();
-		delay(delayLen);
-
-		getStaticCode("door1");
-		transmit(txSP1StaticCode,1);
-		delay(80);
-		getStaticCode("door2");
-		transmit(txSP1StaticCode,1);
-		delay(25);
-		transmit(txSP1StaticCode,1);
+		getStaticCode("door");
+		transmit(txSP1StaticCode,4);
 	}else{
 		getRollingCode("door1");
 		transmit(txSP2RollingCode, SECPLUS2_CODE_LEN);
@@ -775,16 +783,8 @@ void toggleLight(){
 	if(controlProtocol == "drycontact"){
 		Serial.println("Light control not supported with dry contact control.");
 	}else if(controlProtocol == "secplus1"){
-		uint16_t delayLen = (lastRX + 275) - millis();
-		delay(delayLen);
-
 		getStaticCode("light");
-		transmit(txSP1StaticCode,1);
-		delay(80);
-		getStaticCode("door2");
-		transmit(txSP1StaticCode,1);
-		delay(25);
-		transmit(txSP1StaticCode,1);
+		transmit(txSP1StaticCode,4);
 	}else{
 		getRollingCode("light");
 		transmit(txSP2RollingCode,SECPLUS2_CODE_LEN);
@@ -811,13 +811,8 @@ void unlock(){
 
 void toggleLock(){
 	if(controlProtocol == "secplus1"){
-		uint16_t delayLen = (lastRX + 125) - millis();
-		delay(delayLen);
-
 		getStaticCode("lock");
-		transmit(txSP1StaticCode,1);
-		delay(32);
-		transmit(txSP1StaticCode,1);		
+		transmit(txSP1StaticCode,4);
 	}else{
 		getRollingCode("lock");
 		transmit(txSP2RollingCode,SECPLUS2_CODE_LEN);
