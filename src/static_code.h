@@ -3,7 +3,7 @@
 
 #include <Arduino.h>
 
-void readStaticCode(byte rxSP1StaticCode[SECPLUS1_CODE_LEN], uint8_t &door, uint8_t &light);
+void readStaticCode(byte rxSP1StaticCode[SECPLUS1_CODE_LEN], uint8_t &door, uint8_t &light, uint8_t &lock);
 void getStaticCode(const char *command);
 void printStaticCode(byte code[SECPLUS1_CODE_LEN]);
 
