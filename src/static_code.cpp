@@ -69,14 +69,21 @@ void readStaticCode(byte rxSP1StaticCode[SECPLUS1_CODE_LEN], uint8_t &door, uint
 }
 
 void getStaticCode(const char *command){
-	if(strcmp(command,"door1") == 0){
+	if(strcmp(command,"door") == 0){
 		txSP1StaticCode[0] = 0x30;
-	}else if(strcmp(command,"door2") == 0){
-		txSP1StaticCode[0] = 0x31;
+		txSP1StaticCode[1] = 0x31;
+		txSP1StaticCode[2] = 0x31;
+		txSP1StaticCode[3] = 0xFE;
 	}else if(strcmp(command,"light") == 0){
 		txSP1StaticCode[0] = 0x32;
+		txSP1StaticCode[1] = 0x33;
+		txSP1StaticCode[2] = 0x33;
+		txSP1StaticCode[3] = 0xFE;
 	}else if(strcmp(command,"lock") == 0){
-		txSP1StaticCode[0] = 0x35;
+		txSP1StaticCode[0] = 0x34;
+		txSP1StaticCode[1] = 0x35;
+		txSP1StaticCode[2] = 0x35;
+		txSP1StaticCode[3] = 0xFE;
 	}
 
 	return;

@@ -7,5 +7,5 @@ extern unsigned int rollingCodeCounter;
 extern unsigned int idCode;
 
 #define SECPLUS1_CODE_LEN 2
-extern byte txSP1StaticCode[1];
+extern byte txSP1StaticCode[4];
 extern byte rxSP1StaticCode[SECPLUS1_CODE_LEN];
