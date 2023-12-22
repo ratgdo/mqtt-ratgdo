@@ -505,7 +505,6 @@ void sendMotionStatus(){
 	delay(100);
 	getRollingCode("reboot2");
 	transmit(txSP2RollingCode,SECPLUS2_CODE_LEN);
-
 }
 
 void sendObstructionStatus(){
