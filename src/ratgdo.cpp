@@ -648,6 +648,7 @@ void transmit(byte* payload, unsigned int length){
 			return;
 		}
 
+		uint8_t txDelayLen;
 		byte tempPayload[1];
 
 		txDelayLen = (lastRX + 275) - millis();

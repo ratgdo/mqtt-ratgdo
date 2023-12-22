@@ -24,7 +24,7 @@ ratgdo also can control door openers that use a dry contact interface. Status fe
 * [x] Add secplus1 lock commands
 * [x] Fix secplus1 light control bug
 * [ ] Implement auto tune for obstruction sensors
-* [ ] Require two of the same status message for security + 1.0 to eliminate false reports from GDO
+* [x] Require two of the same status message for security + 1.0 to eliminate false reports from GDO
 * [ ] Flip light status on when motion detected packet is sent
 
 # Special thanks
