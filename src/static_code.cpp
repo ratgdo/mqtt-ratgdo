@@ -1,7 +1,7 @@
 #include "common.h"
 #include "static_code.h"
 
-void readStaticCode(byte rxSP1StaticCode[SECPLUS1_CODE_LEN], uint8_t &door, uint8_t &light){
+void readStaticCode(byte rxSP1StaticCode[SECPLUS1_CODE_LEN], uint8_t &door, uint8_t &light, uint8_t &lock){
 	uint8_t obs = 0; // experiement to figure out what key 0x39 is for
 	uint8_t key = 0;
 	uint8_t val = 0;
@@ -56,25 +56,16 @@ void readStaticCode(byte rxSP1StaticCode[SECPLUS1_CODE_LEN], uint8_t &door, uint
 		}
 	}
 
-	// light
+	// light & lock
 	if(key == 0x3A){
 		light = bitRead(val,2);
+		lock =  !bitRead(val,3);
 	}
 
 	// obstruction?
 	if(key == 0x39){
 		obs = val;
 	}
-
-	// Serial.print(" | STATUS:");
-	// Serial.print(" door:");
-	// Serial.print(door);
-	// Serial.print(" light:");
-	// Serial.print(light);
-	// Serial.print(" obs?:");
-	// Serial.print(obs);
-
-	// Serial.println("");
 }
 
 void getStaticCode(const char *command){
