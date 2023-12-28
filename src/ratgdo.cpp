@@ -278,7 +278,7 @@ void IRAM_ATTR isrDebounce(const char *type){
 
 	if(strcmp(type, "openDoor") == 0){
 		if(controlProtocol == "drycontact"){
-			if(currentMillis - lastOpenDoorTime > 100){
+			if(currentMillis - lastOpenDoorTime > 300){
 				dryContactDoorOpen = !digitalRead(TRIGGER_OPEN);
 
 				if(dryContactDoorOpen != lastDryContactDoorOpen){
@@ -300,7 +300,7 @@ void IRAM_ATTR isrDebounce(const char *type){
 
 	if(strcmp(type, "closeDoor") == 0){
 		if(controlProtocol == "drycontact"){
-			if(currentMillis - lastCloseDoorTime > 100){
+			if(currentMillis - lastCloseDoorTime > 300){
 				dryContactDoorClose = !digitalRead(TRIGGER_CLOSE);
 
 				if(dryContactDoorClose != lastDryContactDoorClose){
