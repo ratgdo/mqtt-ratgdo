@@ -3,6 +3,8 @@
 
 void readStaticCode(byte rxSP1StaticCode[SECPLUS1_CODE_LEN], uint8_t &door, uint8_t &light, uint8_t &lock){
 	static uint8_t prevDoor;
+	static uint8_t prevLight;
+	static uint8_t prevLock;
 	
 	uint8_t obs = 0; // experiement to figure out what key 0x39 is for
 	uint8_t key = 0;
@@ -67,7 +69,16 @@ void readStaticCode(byte rxSP1StaticCode[SECPLUS1_CODE_LEN], uint8_t &door, uint
 
 	// light & lock
 	if(key == 0x3A){
+		if(prevLight != bitRead(val,2)){
+			prevLight = bitRead(val,2);
+			return;
+		}
 		light = bitRead(val,2);
+
+		if(prevLock != bitRead(val,3)){
+			prevLock = bitRead(val,3);
+			return;
+		}
 		lock =  !bitRead(val,3);
 	}
 
