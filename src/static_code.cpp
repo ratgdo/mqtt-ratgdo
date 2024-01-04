@@ -24,6 +24,10 @@ void readStaticCode(byte rxSP1StaticCode[SECPLUS1_CODE_LEN], uint8_t &door, uint
 		return;
 	}
 
+	if(key == 0x37){
+		Serial.println("WARNING: Digital wall control panel detected, but it is not requesting door status. Door status will be unavailable.");
+	}
+	
 	// door state
 	if(key == 0x38){
 		Serial.print(" | door state: ");
