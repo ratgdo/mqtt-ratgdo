@@ -8,6 +8,7 @@ extern String uniqueID;
 void ha_autodiscovery_setup(BootstrapManager * bootstrapManager);
 void ha_autodiscovery_door(BootstrapManager * bootstrapManager);
 void ha_autodiscovery_light(BootstrapManager * bootstrapManager);
+void ha_autodiscovery_lock(BootstrapManager * bootstrapManager);
 void ha_autodiscovery_obs(BootstrapManager * bootstrapManager);
 
 #endif
