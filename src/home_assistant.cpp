@@ -8,6 +8,11 @@ void ha_autodiscovery_setup(BootstrapManager *bootstrapManager){
 	ha_autodiscovery_door(bootstrapManager);
 	ha_autodiscovery_light(bootstrapManager);
 	ha_autodiscovery_obs(bootstrapManager);
+
+	if(controlProtocol != "drycontact"){
+		ha_autodiscovery_light(bootstrapManager);
+		ha_autodiscovery_lock(bootstrapManager);
+	}	
 }
 
 void ha_autodiscovery_door(BootstrapManager *bootstrapManager){
