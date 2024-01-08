@@ -294,6 +294,7 @@ void IRAM_ATTR isrDebounce(const char *type){
 			}else if(currentMillis - lastOpenDoorTime > 100 && currentMillis - lastOpenDoorTime < 10000){
 				// now see if the rising edge was between 100ms and 10 seconds after the falling edge
 				dryContactDoorOpen = true;
+				blink(true);
 			}
 		}
 	}
@@ -316,6 +317,7 @@ void IRAM_ATTR isrDebounce(const char *type){
 			}else if(currentMillis - lastCloseDoorTime > 100 && currentMillis - lastCloseDoorTime < 10000){
 				// now see if the rising edge was between 100ms and 10 seconds after the falling edge
 				dryContactDoorClose = true;
+				blink(true);
 			}
 		}
 	}
