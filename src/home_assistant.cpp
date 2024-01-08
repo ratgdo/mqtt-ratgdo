@@ -6,8 +6,6 @@ void ha_autodiscovery_setup(BootstrapManager *bootstrapManager){
 	uniqueID = deviceName + "_" + WiFi.macAddress();
 
 	ha_autodiscovery_door(bootstrapManager);
-	ha_autodiscovery_light(bootstrapManager);
-	ha_autodiscovery_lock(bootstrapManager);
 	ha_autodiscovery_obs(bootstrapManager);
 
 	if(controlProtocol != "drycontact"){
