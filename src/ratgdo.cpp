@@ -407,7 +407,7 @@ void IRAM_ATTR isrObstruction(){
 
 void obstructionLoop(){
 	if(!obstructionSensorDetected) return;
-	long currentMillis = millis();
+	unsigned long currentMillis = millis();
 	static unsigned long lastMillis = 0;
 
 	// the obstruction sensor has 3 states: clear (HIGH with LOW pulse every 7ms), obstructed (HIGH), asleep (LOW)
@@ -670,8 +670,8 @@ void pullLow(){
 
 void blink(bool trigger){
 	if(LED_BUILTIN == OUTPUT_GDO) return;
-	static unsigned int onMillis = 0;
-	unsigned int currentMillis = millis();
+	static unsigned long onMillis = 0;
+	unsigned long currentMillis = millis();
 
 	if(trigger){
 		digitalWrite(LED_BUILTIN,LOW);
