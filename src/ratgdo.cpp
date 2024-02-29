@@ -498,7 +498,7 @@ void sendMotionStatus(){
 	Serial.println(motionStates[motionState]);
 
 	if(isConfigFileOk){
-		bootstrapManager.publish(motionStatusTopic.c_str(), motionStates[motionState].c_str(), true);
+		bootstrapManager.publish(motionStatusTopic.c_str(), motionStates[motionState].c_str(), false);
 	}
 
 	motionState = 0; // reset motion state
