@@ -2,7 +2,11 @@
 #include "rolling_code.h"
 #include "Helpers.h"
 
-void readCounterFromFlash(const char *type, unsigned int &counter){
+// Security+ 2.0 rolling codes are 28 bits wide. encode_wireline() fails for any
+// counter >= 2^28, so the counter must always be wrapped into the 28 bit range.
+static const uint32_t ROLLING_CODE_MASK = 0xFFFFFFF;
+
+void readCounterFromFlash(const char *type, uint32_t &counter){
 
 	File file = LittleFS.open(type, "r");
 
@@ -15,13 +19,15 @@ void readCounterFromFlash(const char *type, unsigned int &counter){
 		return;
 	}
 
-	counter = file.parseInt();
+    // Wrap the stored value into the valid 28 bit range so a corrupted or
+    // previously overflowed value in flash can never overflow the encoder again
+    counter = static_cast<uint32_t>(file.parseInt()) & ROLLING_CODE_MASK;
 
 	//Close the file
 	file.close();
 }
 
-void writeCounterToFlash(const char *type, unsigned int &counter){
+void writeCounterToFlash(const char *type, uint32_t &counter){
 	//Open the file 
 	File file = LittleFS.open(type, "w");
 	
@@ -88,6 +94,9 @@ void readRollingCode(byte rxSP2RollingCode[SECPLUS2_CODE_LEN], uint8_t &door, ui
 }
 
 void getRollingCode(const char *command){
+    // Defensively wrap the counter before encoding; encode_wireline rejects values >= 2^28
+    rollingCodeCounter &= ROLLING_CODE_MASK;
+
 	Serial.print("rolling code for ");
 	Serial.print(idCode, HEX);
 	Serial.print(" ");
@@ -137,13 +146,19 @@ void getRollingCode(const char *command){
 
 	fixed = fixed | id;
 
-	encode_wireline(rollingCodeCounter, fixed, data, txSP2RollingCode);
+    // Abort if the encoder rejects the inputs so a stale/garbage packet is never transmitted
+    const int8_t encodeResult = encode_wireline(rollingCodeCounter, fixed, data, txSP2RollingCode);
+    if(encodeResult != 0){
+        Serial.println("ERROR: rolling code encode failed");
+        return;
+    }
 
 	printRollingCode(txSP2RollingCode);
 	Serial.println("");
 
 	if(strcmp(command,"door1") != 0){ // door2 is created with same counter and should always be called after door1
-		rollingCodeCounter = (rollingCodeCounter + 1) & 0xfffffff;
+        // Wrap at 2^28 so the counter never overflows the Security+ 2.0 rolling code space
+        rollingCodeCounter = (rollingCodeCounter + 1) & ROLLING_CODE_MASK;
 	}
 	return;
 }
