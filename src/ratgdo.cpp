@@ -68,6 +68,14 @@ void setup(){
 	attachInterrupt(INPUT_OBST,isrObstruction,CHANGE);
 
 	delay(60); // 
+
+	// Derive the control protocol from the bootstrapper's "Use Rolling Codes" setting
+    // when it has not been explicitly assigned: rolling codes -> security+ 2.0,
+    // disabled -> security+ 1.0 static codes (ratgdo 1.5 behavior)
+    if(controlProtocol.length() == 0u){
+        controlProtocol = useRollingCodes ? "secplus2" : "secplus1";
+    }
+
 	if(controlProtocol == "drycontact"){
 		Serial.println("Using dry contact control");
 	}else if(controlProtocol == "secplus1"){

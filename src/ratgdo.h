@@ -77,6 +77,10 @@ bool ignoredRetained = false;
 unsigned int setupCompleteMillis;
 uint32_t rollingCodeCounter = 0;
 uint32_t idCode = 0;
+// Definition for controlProtocol declared extern in common.h.
+// "secplus2", "secplus1" or "drycontact"; when left empty it is derived
+// from the bootstrapper's useRollingCodes setting in setup().
+String controlProtocol = "";
 byte txSP1StaticCode[4];
 byte rxSP1StaticCode[SECPLUS1_CODE_LEN];
 byte secplus1States[19] = {0x35,0x35,0x35,0x35,0x33,0x33,0x53,0x53,0x38,0x3A,0x3A,0x3A,0x39,0x38,0x3A, 0x38,0x3A,0x39,0x3A};
