@@ -68,6 +68,14 @@ void setup(){
 	attachInterrupt(INPUT_OBST,isrObstruction,CHANGE);
 
 	delay(60); // 
+
+	// Derive the control protocol from the bootstrapper's "Use Rolling Codes" setting
+    // when it has not been explicitly assigned: rolling codes -> security+ 2.0,
+    // disabled -> security+ 1.0 static codes (ratgdo 1.5 behavior)
+    if(controlProtocol.length() == 0u){
+        controlProtocol = useRollingCodes ? "secplus2" : "secplus1";
+    }
+
 	if(controlProtocol == "drycontact"){
 		Serial.println("Using dry contact control");
 	}else if(controlProtocol == "secplus1"){
@@ -130,6 +138,13 @@ void loop(){
 					Serial.println(idCode, HEX);
 				}
 				readCounterFromFlash("rolling", rollingCodeCounter);
+
+				// Safety margin: jump slightly ahead on every boot so any counter
+				// increments that were transmitted but not yet persisted to flash
+				// (power loss, crash) can never leave us behind the opener.
+				// The opener accepts any value greater than its stored counter,
+				// so skipping a few values is harmless.
+				rollingCodeCounter = (rollingCodeCounter + 16) & 0xFFFFFFF;
 
 				Serial.println("Syncing rolling code counter after reboot...");
 				sync(); // send reboot/sync to the opener on startup
@@ -508,6 +523,9 @@ void sendMotionStatus(){
 	delay(100);
 	getRollingCode("reboot2");
 	transmit(txSP2RollingCode,SECPLUS2_CODE_LEN);
+
+	// Persist the consumed counter so a reboot doesn't fall behind the opener
+    writeCounterToFlash("rolling",rollingCodeCounter);
 }
 
 void sendObstructionStatus(){
@@ -567,6 +585,8 @@ void callback(char *topic, byte *payload, unsigned int length){
 		if(controlProtocol == "secplus2"){
 			getRollingCode("reboot2");
 			transmit(txSP2RollingCode,SECPLUS2_CODE_LEN);
+			// Persist the consumed counter so a reboot doesn't fall behind the opener
+            writeCounterToFlash("rolling",rollingCodeCounter);
 			delay(100);
 		}
 	}

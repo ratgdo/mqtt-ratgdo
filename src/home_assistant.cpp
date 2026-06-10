@@ -1,3 +1,4 @@
+#include "common.h"
 #include "home_assistant.h"
 
 String uniqueID;
