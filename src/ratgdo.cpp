@@ -28,6 +28,7 @@ void setup(){
 
 	#ifndef DISABLE_WIFI
 	bootstrapManager.bootstrapSetup(manageDisconnections, manageHardwareButton, callback);
+	loadRatgdoConfig();
 	
 	// Setup mqtt topics to subscribe to
 	commandTopic = String(mqttTopicPrefix) + deviceName + "/command/#";
@@ -45,7 +46,7 @@ void setup(){
 	lockStatusTopic = String(mqttTopicPrefix) + deviceName + "/status/lock";
 	motionStatusTopic = String(mqttTopicPrefix) + deviceName + "/status/motion";
 	
-	bootstrapManager.setMQTTWill(availabilityStatusTopic.c_str(),"offline",1,false,true);
+	bootstrapManager.setMQTTWill(availabilityStatusTopic.c_str(),"offline",1,true,true);
 	
 	Serial.print("doorCommandTopic: ");
 	Serial.println(doorCommandTopic);
@@ -102,40 +103,6 @@ void loop(){
 	if (isConfigFileOk){
 		// Bootsrap loop() with Wifi, MQTT and OTA functions
 		bootstrapManager.bootstrapLoop(manageDisconnections, manageQueueSubscription, manageHardwareButton);
-
-		if(!setupComplete && bootstrapManager.mqttConnected()){
-			setupComplete = true;
-			setupCompleteMillis = millis();
-
-			// Send Home Assistant autodiscovery mqtt messages
-			ha_autodiscovery_setup(&bootstrapManager);
-
-			// Broadcast that we are online
-			bootstrapManager.publish(availabilityStatusTopic.c_str(), "online", true);
-
-			if(OUTPUT_GDO != LED_BUILTIN){
-				digitalWrite(LED_BUILTIN,HIGH);
-			}
-
-			if(controlProtocol == "secplus2"){
-				LittleFS.begin();
-
-				readCounterFromFlash("idCode", idCode);
-				Serial.print("exisiting client ID: ");
-				Serial.println(idCode,HEX);
-				if((idCode & 0xFFF) != 0x539){
-					Serial.println("Initializing new client ID: ");
-					idCode = (random(0x1, 0xFFFF) % 0x7FF) << 12 | 0x539;
-					writeCounterToFlash("idCode", idCode);
-					Serial.println(idCode, HEX);
-				}
-				readCounterFromFlash("rolling", rollingCodeCounter);
-
-				Serial.println("Syncing rolling code counter after reboot...");
-				sync(); // send reboot/sync to the opener on startup
-			}
-
-		}
 	}
 
 	obstructionLoop();
@@ -506,8 +473,10 @@ void sendMotionStatus(){
 
 	// query to sync light state
 	delay(100);
+	initializeRollingCode();
 	getRollingCode("reboot2");
 	transmit(txSP2RollingCode,SECPLUS2_CODE_LEN);
+	writeCounterToFlash("rolling",rollingCodeCounter);
 }
 
 void sendObstructionStatus(){
@@ -530,7 +499,80 @@ void manageDisconnections(){
 
 /********************************** MQTT SUBSCRIPTIONS *****************************************/
 void manageQueueSubscription(){
+	handleMqttConnected();
 	bootstrapManager.subscribe(commandTopic.c_str());
+}
+
+void handleMqttConnected(){
+	setupComplete = true;
+	setupCompleteMillis = millis();
+	ignoredRetained = false;
+
+	// Send Home Assistant autodiscovery mqtt messages
+	ha_autodiscovery_setup(&bootstrapManager);
+
+	// Broadcast that we are online
+	bootstrapManager.publish(availabilityStatusTopic.c_str(), "online", true);
+
+	if(OUTPUT_GDO != LED_BUILTIN){
+		digitalWrite(LED_BUILTIN,HIGH);
+	}
+
+	publishCurrentStatus();
+
+	if(controlProtocol == "secplus2"){
+		initializeRollingCode();
+
+		Serial.println("Syncing rolling code counter after MQTT connect...");
+		sync();
+	}
+}
+
+void initializeRollingCode(){
+	if(rollingCodeInitialized) return;
+
+	LittleFS.begin();
+
+	readCounterFromFlash("idCode", idCode);
+	Serial.print("exisiting client ID: ");
+	Serial.println(idCode,HEX);
+	if((idCode & 0xFFF) != 0x539){
+		Serial.println("Initializing new client ID: ");
+		idCode = (random(0x1, 0xFFFF) % 0x7FF) << 12 | 0x539;
+		writeCounterToFlash("idCode", idCode);
+		Serial.println(idCode, HEX);
+	}
+	readCounterFromFlash("rolling", rollingCodeCounter);
+	rollingCodeInitialized = true;
+}
+
+void loadRatgdoConfig(){
+	if(additionalParam == "drycontact" || additionalParam == "secplus1" || additionalParam == "secplus2"){
+		controlProtocol = additionalParam;
+	}
+
+	File file = LittleFS.open("/setup.json", "r");
+	if(!file) return;
+
+	StaticJsonDocument<BUFFER_SIZE> json;
+	DeserializationError error = deserializeJson(json, file);
+	file.close();
+	if(error) return;
+
+	if(json.containsKey("controlProtocol")){
+		String configuredProtocol = json["controlProtocol"].as<String>();
+		if(configuredProtocol == "drycontact" || configuredProtocol == "secplus1" || configuredProtocol == "secplus2"){
+			controlProtocol = configuredProtocol;
+		}
+	}
+
+}
+
+void publishCurrentStatus(){
+	sendDoorStatus();
+	sendLightStatus();
+	sendLockStatus();
+	sendObstructionStatus();
 }
 
 /********************************** MANAGE HARDWARE BUTTON *****************************************/
@@ -567,6 +609,7 @@ void callback(char *topic, byte *payload, unsigned int length){
 		if(controlProtocol == "secplus2"){
 			getRollingCode("reboot2");
 			transmit(txSP2RollingCode,SECPLUS2_CODE_LEN);
+			writeCounterToFlash("rolling",rollingCodeCounter);
 			delay(100);
 		}
 	}
@@ -690,6 +733,8 @@ void sync(){
 		return;
 	}
 
+	initializeRollingCode();
+
 	getRollingCode("reboot1");
 	transmit(txSP2RollingCode,SECPLUS2_CODE_LEN);
 	delay(65);
@@ -753,6 +798,7 @@ void toggleDoor(){
 		getStaticCode("door");
 		transmit(txSP1StaticCode,4);
 	}else{
+		initializeRollingCode();
 		getRollingCode("door1");
 		transmit(txSP2RollingCode, SECPLUS2_CODE_LEN);
 
@@ -789,6 +835,7 @@ void toggleLight(){
 		getStaticCode("light");
 		transmit(txSP1StaticCode,4);
 	}else{
+		initializeRollingCode();
 		getRollingCode("light");
 		transmit(txSP2RollingCode,SECPLUS2_CODE_LEN);
 		writeCounterToFlash("rolling",rollingCodeCounter);
@@ -817,6 +864,7 @@ void toggleLock(){
 		getStaticCode("lock");
 		transmit(txSP1StaticCode,4);
 	}else{
+		initializeRollingCode();
 		getRollingCode("lock");
 		transmit(txSP2RollingCode,SECPLUS2_CODE_LEN);
 		writeCounterToFlash("rolling",rollingCodeCounter);

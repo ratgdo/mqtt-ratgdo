@@ -72,8 +72,10 @@ uint8_t obstructionState = 2;
 String obstructionStates[3] = {"obstructed","clear","unknown"};
 
 /********************************** GLOBAL VARS *****************************************/
+String controlProtocol = "secplus2";
 bool setupComplete = false;
 bool ignoredRetained = false;
+bool rollingCodeInitialized = false;
 unsigned int setupCompleteMillis;
 unsigned int rollingCodeCounter;
 unsigned int idCode;
@@ -98,6 +100,10 @@ void callback(char *topic, byte *payload, unsigned int length);
 void manageDisconnections();
 void manageQueueSubscription();
 void manageHardwareButton();
+void handleMqttConnected();
+void initializeRollingCode();
+void loadRatgdoConfig();
+void publishCurrentStatus();
 
 void blink(bool trigger);
 void transmit(byte* payload, unsigned int length);

@@ -4,6 +4,7 @@
 #include "BootstrapManager.h"
 
 extern String uniqueID;
+extern String controlProtocol;
 
 void ha_autodiscovery_setup(BootstrapManager * bootstrapManager);
 void ha_autodiscovery_door(BootstrapManager * bootstrapManager);
